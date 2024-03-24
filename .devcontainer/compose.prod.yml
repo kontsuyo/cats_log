@@ -1,0 +1,60 @@
+# db(MySQL),app(Django),web(Nginx)のコンテナを作成
+services:
+  db:
+  # imageとcontainer_nameを変更
+    image: yourproject_prod/mysql:1.0
+    container_name: yourproject_prod_mysql
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile
+    platform: linux/x86_64
+    volumes:
+      - db_data:/var/lib/mysql
+    env_file:
+      - ../app/.env
+    expose:
+      - 3306
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  app:
+    image: yourproject_prod/django:1.0
+    container_name: "yourproject_prod_app"
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    volumes:
+      - ../app:/home/user1/dev
+    # 8000番ポートをNginx側が接続できるよう開く
+    expose:
+      - "8000"
+    # command: sh -c "/tmp/work/entrypoint.sh"
+    env_file:
+      - ../app/.env
+    depends_on:
+      db:
+        # dbのヘルスチェックが終わってからappを起動させる
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+  server:
+    image: yourproject_prod/nginx:1.0
+    container_name: "yourproject_prod_nginx"
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    # ボリュームを指定
+    # ローカルの/staticをコンテナの/staticにマウントする
+    volumes:
+      - ../app/static:/static
+    # ローカルの80番ボートをコンテナの80番ポートとつなぐ
+    ports:
+      - "80:80"
+    # 先にappを起動してからwebを起動する
+    depends_on:
+      - app
+volumes:
+  db_data:
