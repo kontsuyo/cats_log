@@ -11,7 +11,8 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update -qq &&\
    apt-get install -y --no-install-recommends \
    tzdata \
-   # sudo \
+   sudo \
+   less \
    locales \
    python3-dev \
    default-libmysqlclient-dev \
@@ -30,9 +31,12 @@ ENV TZ="Asia/Tokyo"
 # pythonモジュールのインストール
 WORKDIR /tmp/work
 COPY ./app/requirements.txt ${PWD}
-RUN pip install -r requirements.txt &&\
-   pip install django-debug-toolbar && \
-   pip install django-environ
+RUN pip install -r requirements.txt \
+    django-debug-toolbar \
+    django-environ \
+    pytest \
+    pytest-django
+
 
 # 環境変数の定義
 ENV USER user1
