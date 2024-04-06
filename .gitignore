@@ -301,3 +301,5 @@ pyrightconfig.json
 static/
 # ignore migration files
 migrations/
+
+.unibeautifyrc.yaml
