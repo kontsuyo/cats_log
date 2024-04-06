@@ -33,9 +33,8 @@ services:
       dockerfile: ./app/Dockerfile
     container_name: "app_cats_log" # 変更
     ports:
-      - 8000:8000 # ホスト：コンテナ
-    # environment:
-    #   - DEBUG=1
+      - 8080:8080 # ホスト：コンテナ
+    # command: python3 /home/user1/dev/manage.py runserver 0.0.0.0:8000
     depends_on:
       db:
         # dbのヘルスチェックが終わってからappを起動させる
