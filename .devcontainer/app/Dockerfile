@@ -8,17 +8,17 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # パッケージのインストール
-RUN apt-get update -qq &&\
-   apt-get install -y --no-install-recommends \
-   tzdata \
-   sudo \
-   less \
-   locales \
-   python3-dev \
-   default-libmysqlclient-dev \
-   pkg-config \
-   build-essential
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    tzdata \
+    sudo \
+    less \
+    locales \
+    python3-dev \
+    default-libmysqlclient-dev \
+    pkg-config \
+    build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # 日本語のロケールとタイムゾーンの設定
 RUN localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
